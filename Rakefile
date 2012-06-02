@@ -11,10 +11,8 @@ RSpec::Core::RakeTask.new(:spec) do |t|
   t.rspec_opts = ["--format", "doc", "--color"]
   t.pattern = 'spec/*/*_spec.rb'
 end
-
-desc "Create a Puppet module."
-task :build => [:clean, :spec] do
-  sh 'puppet-module build'
-end
-
-task :default => :build
+#desc "Create a Puppet module."
+#task :build => [:clean, :spec] do
+#  sh 'puppet-module build'
+#end
+task :default => :spec
