@@ -64,7 +64,9 @@ define wget::authfetch(
     $real_no_check_cert = ''
   }
   if $source == "" {
-    $source = $name
+    $real_source = $name
+  } else {
+    $real_source = $source
   }
   
   file { "/tmp/wgetrc-$name":
@@ -73,7 +75,7 @@ define wget::authfetch(
     content => "password=$password",
   } ->
   exec { "wget-$name":
-    command => "/usr/bin/wget --user=$user --output-document=$destination $source$real_no_check_cert",
+    command => "/usr/bin/wget --user=$user --output-document=$destination $real_source$real_no_check_cert",
     timeout => $timeout,
     unless => "/usr/bin/test -s $destination",
     environment => $environment,
