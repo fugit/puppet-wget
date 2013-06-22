@@ -5,7 +5,7 @@
 #
 ################################################################################
 class wget {
-	package { "wget": ensure => installed }
+  package { "wget": ensure => installed }
 }
 
 ################################################################################
@@ -17,22 +17,22 @@ class wget {
 ################################################################################
 define wget::fetch($source,$destination,$timeout="0") {
 
-	# using "unless" with /usr/bin/test instead of "creates" to re-attempt download
-	# on empty files.
-	# wget creates an empty file when a download fails, and then it wouldn't try
-	# again to download the file
-	if $http_proxy {
-		$environment = [ "HTTP_PROXY=$http_proxy", "http_proxy=$http_proxy" ]
-	}
-	else {
-		$environment = []
-	}
-	exec { "wget-$name":
-		command => "/usr/bin/wget --output-document=$destination $source",
-		timeout => $timeout,
-		unless => "/usr/bin/test -s $destination",
-		environment => $environment,
-	}
+  # using "unless" with /usr/bin/test instead of "creates" to re-attempt download
+  # on empty files.
+  # wget creates an empty file when a download fails, and then it wouldn't try
+  # again to download the file
+  if $http_proxy {
+    $environment = [ "HTTP_PROXY=$http_proxy", "http_proxy=$http_proxy" ]
+  }
+  else {
+    $environment = []
+  }
+  exec { "wget-$name":
+    command => "/usr/bin/wget --output-document=$destination $source",
+    timeout => $timeout,
+    unless => "/usr/bin/test -s $destination",
+    environment => $environment,
+  }
 }
 
 ################################################################################
@@ -43,23 +43,37 @@ define wget::fetch($source,$destination,$timeout="0") {
 # password must be stored in the password variable within the .wgetrc file.
 #
 ################################################################################
-define wget::authfetch($source,$destination,$user,$password="",$timeout="0") {
-	if $http_proxy {
-		$environment = [ "HTTP_PROXY=$http_proxy", "http_proxy=$http_proxy", "WGETRC=/tmp/wgetrc-$name" ]
-	}
-	else {
-		$environment = [ "WGETRC=/tmp/wgetrc-$name" ]
-	}
-	file { "/tmp/wgetrc-$name":
-		owner => root,
-		mode => 600,
-		content => "password=$password",
-	} ->
-	exec { "wget-$name":
-		command => "/usr/bin/wget --user=$user --output-document=$destination $source",
-		timeout => $timeout,
-		unless => "/usr/bin/test -s $destination",
-		environment => $environment,
-	}
+define wget::authfetch(
+  $bool_no_check_cert = false,
+  $destination,
+  $password="",
+  $source,
+  $timeout="0"
+  $user,
+) {
+  if $http_proxy {
+    $environment = [ "HTTP_PROXY=$http_proxy", "http_proxy=$http_proxy", "WGETRC=/tmp/wgetrc-$name" ]
+  }
+  else {
+    $environment = [ "WGETRC=/tmp/wgetrc-$name" ]
+  }
+  if $bool_no_check_cert {
+    $real_no_check_cert = ' --no-check-certificate'
+  } 
+  else {
+    $real_no_check_cert = ''
+  }
+  
+  file { "/tmp/wgetrc-$name":
+    owner => root,
+    mode => 600,
+    content => "password=$password",
+  } ->
+  exec { "wget-$name":
+    command => "/usr/bin/wget --user=$user --output-document=$destination $source$real_no_check_cert",
+    timeout => $timeout,
+    unless => "/usr/bin/test -s $destination",
+    environment => $environment,
+  }
 }
 
