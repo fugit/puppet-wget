@@ -48,7 +48,7 @@ define wget::authfetch(
   $destination,
   $password="",
   $source,
-  $timeout="0"
+  $timeout="0",
   $user,
 ) {
   if $http_proxy {
