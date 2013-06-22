@@ -47,7 +47,7 @@ define wget::authfetch(
   $bool_no_check_cert = false,
   $destination,
   $password="",
-  $source,
+  $source="",
   $timeout="0",
   $user,
 ) {
@@ -62,6 +62,9 @@ define wget::authfetch(
   } 
   else {
     $real_no_check_cert = ''
+  }
+  if $source == "" {
+    $source = $name
   }
   
   file { "/tmp/wgetrc-$name":
