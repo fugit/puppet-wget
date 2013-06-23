@@ -55,8 +55,10 @@ define wget::multifetch::execdefine(
   $source_base,
   $user,
 ) {
+  $filename = url_parse("$source_base/$title", filename)
+
   exec { $title:
-    command => "/usr/bin/wget --restrict-file-names=unix --user=$user --output-document=$destination/$title $source_base/$title$real_no_check_cert",
+    command => "/usr/bin/wget $real_no_check_cert--user=$user --output-document=$destination/$filename $source_base/$title",
     timeout => $timeout,
     unless => "/usr/bin/test -s $destination/$title",
     environment => $environment,
