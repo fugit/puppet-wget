@@ -7,7 +7,7 @@
 #
 ################################################################################
 define wget::multifetch(
-  $bool_no_check_cert = false,
+  $no_check_cert = false,
   $destination,
   $http_proxy         = undef,
   $password           = undef,
@@ -31,7 +31,7 @@ define wget::multifetch(
     $environment = []
   }
   
-  if $bool_no_check_cert {
+  if $no_check_cert {
     $real_no_check_cert = ' --no-check-certificate'
   } 
   else {
