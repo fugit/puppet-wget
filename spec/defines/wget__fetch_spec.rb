@@ -33,7 +33,7 @@ describe 'wget::fetch' do
     :no_check_cert => true, :user => 'user2', :password => 'password' } }
     
   it { should contain_exec('wget-fetchname2').with(
-    'command' => '/usr/bin/wget --user=user2 --output-document=/dest http://somehost.com/src/ --no-check-certificate',
+    'command' => '/usr/bin/wget --no-check-certificate --user=user2 --output-document=/dest http://somehost.com/src/',
     'environment' => [ "WGETRC=/tmp/wgetrc-fetchname2" ]
   ) }
 end

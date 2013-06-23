@@ -32,7 +32,7 @@ define wget::multifetch(
   }
   
   if $no_check_cert {
-    $real_no_check_cert = ' --no-check-certificate'
+    $real_no_check_cert = '--no-check-certificate '
   } 
   else {
     $real_no_check_cert = ''

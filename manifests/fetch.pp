@@ -31,14 +31,14 @@ define wget::fetch(
   }
   
   if $no_check_cert {
-    $real_no_check_cert = ' --no-check-certificate'
+    $real_no_check_cert = '--no-check-certificate '
   } 
   else {
     $real_no_check_cert = ''
   }
   
   exec { "wget-$name":
-    command => "/usr/bin/wget --user=$user --output-document=$destination $source$real_no_check_cert",
+    command => "/usr/bin/wget $real_no_check_cert--user=$user --output-document=$destination $source",
     timeout => $timeout,
     unless => "/usr/bin/test -s $destination",
     environment => $environment,
