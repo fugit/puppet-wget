@@ -21,9 +21,9 @@ describe 'wget::multifetch' do
   let(:params) { { :destination => 'dest', :source_base => 'https://src', :names => ['path/name1', 'path/name2'] } }
     
   it { should contain_exec('path/name1').with(
-    'command' => '/usr/bin/wget --user= --output-document=dest/path/name1 https://src/path/name1',
+    'command' => '/usr/bin/wget --restrict-file-names=unix --user= --output-document=dest/path/name1 https://src/path/name1',
   ) }
   it { should contain_exec('path/name2').with(
-    'command' => '/usr/bin/wget --user= --output-document=dest/path/name2 https://src/path/name2',
+    'command' => '/usr/bin/wget --restrict-file-names=unix --user= --output-document=dest/path/name2 https://src/path/name2',
   ) }
 end
