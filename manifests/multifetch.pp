@@ -60,7 +60,7 @@ define wget::multifetch::execdefine(
   exec { $title:
     command => "/usr/bin/wget $real_no_check_cert--user=$user --output-document=$destination/$filename $source_base/$title",
     timeout => $timeout,
-    unless => "/usr/bin/test -s $destination/$title",
+    unless => "/usr/bin/test -s $destination/$filename",
     environment => $environment,
   }
 }
