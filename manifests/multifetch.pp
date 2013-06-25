@@ -7,25 +7,26 @@
 #
 ################################################################################
 define wget::multifetch(
-  $no_check_cert = false,
   $destination,
-  $http_proxy         = undef,
-  $password           = undef,
-  $source_base,
   $names,
+  $no_check_cert = false,
+  $http_proxy         = undef,
+  $http_user          = undef,
+  $http_password      = undef,
+  $source_base,
+  $script_user        = undef,
   $timeout            = "0",
-  $user               = undef,
 ) {
   if $http_proxy {
     $environment = [ "HTTP_PROXY=$http_proxy", "http_proxy=$http_proxy", "WGETRC=/tmp/wgetrc-$name" ]
   }
-  elsif password {
+  elsif $http_password {
     $environment = [ "WGETRC=/tmp/wgetrc-$name" ]
     file { "/tmp/wgetrc-$name":
       before  => Exec[$names],
-      content => "password=$password",
+      content => "password=$http_password",
       mode => 600,
-      owner => root,
+      owner => $script_user,
     }
   } else {
     $environment = []
@@ -41,9 +42,10 @@ define wget::multifetch(
   wget::multifetch::execdefine { $names:
     destination         => $destination,
     environment         => $environment,
+    http_user           => $http_user, 
     real_no_check_cert  => $real_no_check_cert,
+    script_user         => $script_user,
     source_base         => $source_base,
-    user                => $user, 
   }
 }
 
@@ -51,16 +53,18 @@ define wget::multifetch(
 define wget::multifetch::execdefine(
   $destination,
   $environment,
+  $http_user,
   $real_no_check_cert,
+  $script_user,
   $source_base,
-  $user,
 ) {
   $filename = url_parse("$source_base/$title", filename)
 
   exec { $title:
-    command => "/usr/bin/wget $real_no_check_cert--user=$user --output-document=$destination/$filename $source_base/$title",
-    timeout => $timeout,
-    unless => "/usr/bin/test -s $destination/$filename",
+    command     => "/usr/bin/wget $real_no_check_cert--user=$http_user --output-document=$destination/$filename $source_base/$title",
+    timeout     => $timeout,
+    unless      => "/usr/bin/test -s $destination/$filename",
+    user        => $script_user,
     environment => $environment,
   }
 }
