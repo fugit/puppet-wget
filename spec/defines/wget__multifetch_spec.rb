@@ -18,7 +18,7 @@ describe 'wget::multifetch' do
   let(:title) { 'multifetchname' }
   let(:node) { 'wget.jerger.org' }
   let(:facts) { { :operatingsystem => 'ubuntu' } }
-  let(:params) { { :destination => 'dest', :source_base => 'https://src', :names => ['path/name1', 'path/name2'] } }
+  let(:params) { { :destination => 'dest', :source_base => 'https://src', :files => ['path/name1', 'path/name2'] } }
     
   it { should contain_exec('path/name1').with(
     'command' => '/usr/bin/wget --user= --output-document=dest/name1 https://src/path/name1',

@@ -1,18 +1,55 @@
-################################################################################
-# Definition: wget::fetch
+# = Define: wget::multifetch
 #
-# This class will download files from the internet.  You may define a web proxy
-# using $http_proxy if necessary. Username must be provided. And the user's
-# password must be stored in the password variable within the .wgetrc file.
+# This class will download multiple files from the internet. 
 #
-################################################################################
+# == Parameters
+#
+# [*destination*]
+#   The place, where the downloaded result should be stored. 
+#   This parameter is mandatory.
+#
+# [*http_proxy*]
+#   In order to use a http_proxy this parameter can be used.
+#   This parameter is optional, default is undef.
+#
+# [*http_password*]
+#   Http_password is stored securely in the .wgetrc file.
+#   This parameter is optional, default is undef.
+#
+# [*http_user*]
+#   The user for the wget download operation.
+#   This parameter is optional, default is undef.
+#
+# [*files*]
+#   An array of filenames to download. The given paths are relative to source_base.
+#   This parameter is mandatory.
+#
+# [*no_check_cert*]
+#   Wether to check certs in https mode.
+#   This parameter is optional, default is flase.
+#   
+# [*source_base*]
+#   The Base-URL of the files.
+#   This parameter is mandantory.
+#
+# [*script_user*]
+#   The wget executing user.
+#   This parameter is optional. Default value is undef.
+#
+# [*timeout*]
+#   How long should be waited for connection & download.
+#   This parameter is optional, default is 0.
+#
+# == Author
+#   Michael Jerger <dev@jerger.org/>
+#
 define wget::multifetch(
   $destination,
-  $names,
-  $no_check_cert = false,
   $http_proxy         = undef,
   $http_user          = undef,
   $http_password      = undef,
+  $files,
+  $no_check_cert      = false,
   $source_base,
   $script_user        = undef,
   $timeout            = "0",
@@ -23,7 +60,7 @@ define wget::multifetch(
   elsif $http_password {
     $environment = [ "WGETRC=/tmp/wgetrc-$name" ]
     file { "/tmp/wgetrc-$name":
-      before  => Exec[$names],
+      before  => Exec[$files],
       content => "password=$http_password",
       mode => 600,
       owner => $script_user,
@@ -39,7 +76,7 @@ define wget::multifetch(
     $real_no_check_cert = ''
   }
   
-  wget::multifetch::execdefine { $names:
+  wget::multifetch::execdefine { $files:
     destination         => $destination,
     environment         => $environment,
     http_user           => $http_user, 
