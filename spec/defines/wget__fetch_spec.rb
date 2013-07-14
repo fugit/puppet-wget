@@ -20,9 +20,8 @@ describe 'wget::fetch' do
   let(:facts) { { :operatingsystem => 'ubuntu' } }
   let(:params) { { :destination => '/dest', :source => 'http://somehost.com/src/' } }
     
-  it { should contain_exec('wget-fetchname1').with(
-    'command' => '/usr/bin/wget --user= --output-document=/dest http://somehost.com/src/',
-  ) }
+  it { should contain_exec('wget-fetchname1').with_command('/usr/bin/wget --user= --output-document=/dest http://somehost.com/src/')
+  }
 end
 
 describe 'wget::fetch' do

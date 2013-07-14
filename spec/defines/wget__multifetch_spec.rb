@@ -20,10 +20,8 @@ describe 'wget::multifetch' do
   let(:facts) { { :operatingsystem => 'ubuntu' } }
   let(:params) { { :destination => 'dest', :source_base => 'https://src', :files => ['path/name1', 'path/name2'] } }
     
-  it { should contain_exec('path/name1').with(
-    'command' => '/usr/bin/wget --user= --output-document=dest/name1 https://src/path/name1',
-  ) }
-  it { should contain_exec('path/name2').with(
-    'command' => '/usr/bin/wget --user= --output-document=dest/name2 https://src/path/name2',
-  ) }
+  it { should contain_exec('path/name1').with_command('/usr/bin/wget --user= --output-document=dest/name1 https://src/path/name1')
+  }
+  it { should contain_exec('path/name2').with_command('/usr/bin/wget --user= --output-document=dest/name2 https://src/path/name2')
+  }
 end
