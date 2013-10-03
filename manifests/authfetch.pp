@@ -8,12 +8,12 @@
 # Deprecated - use fetch instead
 ################################################################################
 define wget::authfetch(
-  $bool_no_check_cert = false,
   $destination,
-  $password="",
-  $source="",
-  $timeout="0",
   $user,
+  $bool_no_check_cert = false,
+  $password           = '',
+  $source             = '',
+  $timeout            = '0'
 ) {
   if $http_proxy {
     $environment = [ "HTTP_PROXY=$http_proxy", "http_proxy=$http_proxy", "WGETRC=/tmp/wgetrc-$name" ]
@@ -23,32 +23,31 @@ define wget::authfetch(
   }
   if $bool_no_check_cert {
     $real_no_check_cert = ' --no-check-certificate'
-  } 
+  }
   else {
     $real_no_check_cert = ''
   }
-    
+
   file { "/tmp/wgetrc-$name":
-    owner => root,
-    mode => 600,
+    owner   => root,
+    mode    => '0600',
     content => "password=$password",
   }
-  
+
   if isArray($source) {
     exec { $source:
-      command => "/usr/bin/wget --user=$user --output-document=$destination $source$real_no_check_cert",
-      timeout => $timeout,
-      unless => "/usr/bin/test -s $destination",
+      command     => "/usr/bin/wget --user=$user --output-document=$destination $source$real_no_check_cert",
+      timeout     => $timeout,
+      unless      => "/usr/bin/test -s $destination",
       environment => $environment,
     }
   }
-  else {  
+  else {
     exec { "wget-$name":
-      command => "/usr/bin/wget --user=$user --output-document=$destination $source$real_no_check_cert",
-      timeout => $timeout,
-      unless => "/usr/bin/test -s $destination",
+      command     => "/usr/bin/wget --user=$user --output-document=$destination $source$real_no_check_cert",
+      timeout     => $timeout,
+      unless      => "/usr/bin/test -s $destination",
       environment => $environment,
     }
   }
 }
-

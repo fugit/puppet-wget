@@ -1,11 +1,11 @@
 # = Define: wget::multifetch
 #
-# This class will download multiple files from the internet. 
+# This class will download multiple files from the internet.
 #
 # == Parameters
 #
 # [*destination*]
-#   The place, where the downloaded result should be stored. 
+#   The place, where the downloaded result should be stored.
 #   This parameter is mandatory.
 #
 # [*http_proxy*]
@@ -27,7 +27,7 @@
 # [*no_check_cert*]
 #   Wether to check certs in https mode.
 #   This parameter is optional, default is flase.
-#   
+#
 # [*source_base*]
 #   The Base-URL of the files.
 #   This parameter is mandantory.
@@ -45,14 +45,14 @@
 #
 define wget::multifetch(
   $destination,
+  $files,
+  $source_base,
   $http_proxy         = undef,
   $http_user          = undef,
   $http_password      = undef,
-  $files,
   $no_check_cert      = false,
-  $source_base,
   $script_user        = undef,
-  $timeout            = "0",
+  $timeout            = '0'
 ) {
   if $http_proxy {
     $environment = [ "HTTP_PROXY=$http_proxy", "http_proxy=$http_proxy", "WGETRC=/tmp/wgetrc-$name" ]
@@ -62,46 +62,26 @@ define wget::multifetch(
     file { "/tmp/wgetrc-$name":
       before  => Exec[$files],
       content => "password=$http_password",
-      mode => 600,
-      owner => $script_user,
+      mode    => '0600',
+      owner   => $script_user,
     }
   } else {
     $environment = []
   }
-  
+
   if $no_check_cert {
     $real_no_check_cert = '--no-check-certificate '
-  } 
+  }
   else {
     $real_no_check_cert = ''
   }
-  
+
   wget::multifetch::execdefine { $files:
     destination         => $destination,
     environment         => $environment,
-    http_user           => $http_user, 
+    http_user           => $http_user,
     real_no_check_cert  => $real_no_check_cert,
     script_user         => $script_user,
     source_base         => $source_base,
-  }
-}
-
-
-define wget::multifetch::execdefine(
-  $destination,
-  $environment,
-  $http_user,
-  $real_no_check_cert,
-  $script_user,
-  $source_base,
-) {
-  $filename = url_parse("$source_base/$title", filename)
-
-  exec { $title:
-    command     => "/usr/bin/wget $real_no_check_cert--user=$http_user --output-document=$destination/$filename $source_base/$title",
-    timeout     => $timeout,
-    unless      => "/usr/bin/test -s $destination/$filename",
-    user        => $script_user,
-    environment => $environment,
   }
 }

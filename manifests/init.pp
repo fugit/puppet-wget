@@ -5,5 +5,5 @@
 #
 ################################################################################
 class wget {
-  package { "wget": ensure => installed }
+  package { 'wget': ensure => installed }
 }

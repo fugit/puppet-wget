@@ -5,7 +5,7 @@
 # == Parameters
 #
 # [*destination*]
-#   The place, where the downloaded result should be stored. 
+#   The place, where the downloaded result should be stored.
 #   This parameter is mandantory.
 #
 # [*http_proxy*]
@@ -27,7 +27,7 @@
 # [*password*]
 #   Password is stored securely in the .wgetrc file.
 #   This parameter is deprecated (use http_password instead) & optional, default is undef.
-#   
+#
 # [*source*]
 #   The URL of the file.
 #   This parameter is mandantory.
@@ -44,22 +44,22 @@
 #   Michael Jerger <dev@jerger.org/>
 #
 define wget::fetch(
+  $source,
   $destination,
   $http_password      = undef,
   $http_proxy         = undef,
   $http_user          = undef,
   $no_check_cert      = false,
   $password           = undef,
-  $source,
-  $timeout            = "0",
-  $user               = undef,
+  $timeout            = '0',
+  $user               = undef
 ) {
   $managed_http_password = $http_password ? {
-    undef    => $password,
+    undef   => $password,
     default => http_password,
-  } 
+  }
   $managed_http_user = $http_user ? {
-    undef    => $user,
+    undef   => $user,
     default => http_user,
   }
 
@@ -71,25 +71,24 @@ define wget::fetch(
     file { "/tmp/wgetrc-$name":
       before  => Exec[$source],
       content => "password=$managed_http_password",
-      mode => 600,
-      owner => root,
+      mode    => '0600',
+      owner   => root,
     }
   } else {
     $environment = []
   }
-  
+
   if $no_check_cert {
     $real_no_check_cert = '--no-check-certificate '
-  } 
+  }
   else {
     $real_no_check_cert = ''
   }
-  
+
   exec { "wget-$name":
-    command => "/usr/bin/wget $real_no_check_cert--user=$managed_http_user --output-document=$destination $source",
-    timeout => $timeout,
-    unless => "/usr/bin/test -s $destination",
+    command     => "/usr/bin/wget $real_no_check_cert--user=$managed_http_user --output-document=$destination $source",
+    timeout     => $timeout,
+    unless      => "/usr/bin/test -s $destination",
     environment => $environment,
   }
 }
-
